@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pranav Sahu - Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            scroll-behavior: smooth;
+        }
+        
+        /* --- Enhanced Smooth Scrolling --- */
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 2rem;
+        }
+        
+        /* --- Scroll Progress Bar --- */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: linear-gradient(90deg, #00ffff, #0080ff, #8000ff);
+            z-index: 9999;
+            transition: width 0.1s ease-out;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+        }
+        /* --- Full Page Animated Background --- */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+        }
+        
+        /* --- Enhanced Responsive Navigation Bar --- */
+        #main-nav {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            width: 80px; /* Collapsed width */
+            transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-right: 1px solid rgba(0, 255, 255, 0.2);
+            padding: 1rem 0;
+            display: flex;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.1);
+            z-index: 1000;
+        }
+        
+        @media (min-width: 1024px) {
+            #main-nav:hover {
+                width: 280px; /* Slightly wider for better text display */
+                transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            }
+        }
+        
+        /* Hide desktop navigation on mobile */
+        @media (max-width: 1023px) {
+            #main-nav {
+                display: none;
+            }
+        }
+        
+
+
+        #main-nav ul {
+            list-style: none;
+            padding: 2rem 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center icons by default */
+            justify-content: space-around;
+            height: 100%;
+            width: 100%;
+            position: relative;
+        }
+        
+        /* Ensure navigation items are properly aligned */
+        #main-nav li {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+        
+        @media (min-width: 1024px) {
+            #main-nav:hover ul {
+                align-items: flex-start; /* Align left when expanded */
+            }
+        }
+
+        #main-nav li {
+            width: 100%;
+            padding: 0 0.5rem;
+            z-index: 2; /* Ensure links are above the indicator */
+            transition: transform 0.2s ease;
+        }
+        
+        #main-nav li:hover {
+            transform: translateX(5px);
+        }
+        #main-nav a {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #e0e0e0;
+            text-decoration: none;
+            white-space: nowrap;
+            border-radius: 9999px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #main-nav a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        #main-nav a:hover::before {
+            left: 100%;
+        }
+        
+        #main-nav li.active a {
+            color: #38bdf8;
+            background: rgba(56, 189, 248, 0.1);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+        }
+        .nav-text {
+            margin-left: 1.5rem;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+            transform: translateX(-10px);
+        }
+        
+        @media (min-width: 1024px) {
+            #main-nav:hover .nav-text {
+                opacity: 1;
+                transform: translateX(0);
+                transition-delay: 0.1s;
+            }
+        }
+        
+        /* Ensure icons are always visible */
+        #main-nav .nav-icon {
+            opacity: 1;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #e0e0e0;
+            width: 1.5rem;
+            height: 1.5rem;
+            flex-shrink: 0;
+        }
+        
+        #main-nav a:hover .nav-icon {
+            color: #00ffff;
+        }
+        
+        #nav-indicator {
+            position: absolute;
+            left: 0.5rem;
+            width: calc(100% - 1rem);
+            height: 52px; /* Match link height */
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 128, 255, 0.1));
+            border-radius: 9999px;
+            z-index: 1;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.2);
+            opacity: 0; /* Hidden by default, only shows on hover */
+            pointer-events: none; /* Don't interfere with hover events */
+        }
+        
+        #nav-indicator::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 4px;
+            height: 4px;
+            background: #00ffff;
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 1);
+        }
+
+        main {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(20, 20, 20, 0.5));
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+            flex-grow: 1;
+        }
+        
+
+
+        /* --- Enhanced 3D Glass Effect Card --- */
+        .glass-effect {
+            background: rgba(0, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(0, 255, 255, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        .glass-effect:hover {
+            background: rgba(0, 255, 255, 0.08);
+            transform: perspective(1000px) rotateX(5deg) rotateY(-5deg) scale(1.05);
+            box-shadow: 0 25px 70px 0 rgba(0, 0, 0, 0.6), 0 0 40px rgba(0, 255, 255, 0.4);
+        }
+        /* --- Enhanced Animated Skill Icons --- */
+        .skill-card-icon {
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .glass-effect:hover .skill-card-icon {
+            transform: scale(1.2) rotate(10deg);
+            color: #00ffff;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, #00ffff, transparent);
+        }
+        .timeline-item {
+            position: relative;
+            width: 50%;
+            transition: transform 0.3s ease;
+        }
+        .timeline-item:hover {
+            transform: translateY(-5px);
+        }
+        .timeline-item:nth-child(odd) {
+            padding-right: 2rem;
+            left: 0;
+        }
+        .timeline-item:nth-child(even) {
+            padding-left: 2rem;
+            left: 50%;
+        }
+        .timeline-dot {
+            content: '';
+            position: absolute;
+            top: 1.25rem;
+            width: 1rem;
+            height: 1rem;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00ffff, #0080ff);
+            border: 3px solid #000000;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.6);
+            transition: all 0.3s ease;
+        }
+        .timeline-item:hover .timeline-dot {
+            transform: scale(1.2);
+            box-shadow: 0 0 35px rgba(0, 255, 255, 1);
+        }
+        .timeline-item:nth-child(odd) .timeline-dot {
+            right: -0.5rem;
+        }
+        .timeline-item:nth-child(even) .timeline-dot {
+            left: -0.5rem;
+        }
+        @media (max-width: 768px) {
+            .timeline::before {
+                left: 0.5rem;
+                transform: translateX(0);
+            }
+            .timeline-item {
+                width: 100%;
+                padding-left: 2.5rem;
+                padding-right: 0;
+                left: 0 !important;
+            }
+            .timeline-dot {
+                left: 0 !important;
+            }
+        }
+        .form-input {
+            background: rgba(0, 255, 255, 0.05);
+            border: 1px solid rgba(0, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .form-input:focus {
+            background: rgba(0, 255, 255, 0.08);
+            outline: none;
+            border-color: #00ffff;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .fade-in-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        #typing-text::after {
+            content: '|';
+            animation: blink 0.7s infinite;
+        }
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        /* --- Enhanced Button Shine Effect --- */
+        .shine-button {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .shine-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 75%;
+            height: 100%;
+            background: linear-gradient(120deg, rgba(255,255,255,0) 20%, rgba(255,255,255,0.3), rgba(255,255,255,0) 80%);
+            transform: skewX(-25deg);
+            transition: left 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .shine-button:hover::before {
+            left: 150%;
+        }
+        .shine-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 255, 255, 0.4);
+        }
+        /* --- Enhanced Animated Section Title --- */
+        .section-title span {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(30px) scale(0.8);
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .section-title.visible span {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+        
+        /* --- Smooth Section Transitions --- */
+        section {
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        
+        /* --- Enhanced Scroll Animations --- */
+        .scroll-fade {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .scroll-fade.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* --- Navigation Link Hover Effects --- */
+        #main-nav a:hover {
+            color: #00ffff;
+            background: rgba(0, 255, 255, 0.08);
+            transform: scale(1.05);
+        }
+        
+        /* --- Active Navigation State Enhancement --- */
+        #main-nav li.active a {
+            background: rgba(0, 255, 255, 0.15);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
+        }
+        
+        /* --- Smooth Icon Transitions --- */
+        #main-nav i {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        #main-nav a:hover i {
+            transform: scale(1.1);
+            color: #00ffff;
+        }
+        
+        /* --- Enhanced Scroll to Top Button --- */
+        #scroll-to-top {
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+        
+        #scroll-to-top:hover {
+            box-shadow: 0 15px 50px rgba(0, 255, 255, 0.6);
+        }
+        
+        /* --- Enhanced Page Transitions --- */
+        * {
+            scroll-behavior: smooth;
+        }
+        
+        /* --- Improved Focus States --- */
+        a:focus, button:focus, input:focus, textarea:focus {
+            /* outline: 2px solid #00ffff; */
+            outline: none;
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <!-- Scroll Progress Bar -->
+    <div class="scroll-progress"></div>
+    
+    <canvas id="particle-canvas"></canvas>
+
+        <div class="flex">
+                    <!-- Enhanced Responsive Side Navigation -->
+        <nav id="main-nav">
+            <!-- Desktop Navigation -->
+            <ul class="desktop-nav">
+                <div id="nav-indicator"></div>
+                <li data-section="hero" class="active"><a href="#hero">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9,22 9,12 15,12 15,22"></polyline>
+                    </svg>
+                    <span class="nav-text">Home</span>
+                </a></li>
+                <li data-section="about"><a href="#about">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    <span class="nav-text">About</span>
+                </a></li>
+                <li data-section="education"><a href="#education">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                        <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                    </svg>
+                    <span class="nav-text">Education</span>
+                </a></li>
+                <li data-section="skills"><a href="#skills">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                        <line x1="8" y1="21" x2="16" y2="21"></line>
+                        <line x1="12" y1="17" x2="12" y2="21"></line>
+                    </svg>
+                    <span class="nav-text">Skills</span>
+                </a></li>
+                <li data-section="experience"><a href="#experience">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                    </svg>
+                    <span class="nav-text">Experience</span>
+                </a></li>
+                <li data-section="projects"><a href="#projects">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    <span class="nav-text">Projects</span>
+                </a></li>
+                <li data-section="contact"><a href="#contact">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                    <span class="nav-text">Contact</span>
+                </a></li>
+            </ul>
+        </nav>
+        
+        <!-- Mobile Hamburger Menu (Fixed Position) -->
+        <div class="lg:hidden fixed top-4 right-4 z-50">
+            <button id="mobile-menu-toggle" class="bg-black/80 backdrop-blur-md border border-cyan-400/30 rounded-lg p-2 hover:bg-black/90 hover:border-cyan-400/50 transition-all duration-300">
+                <div class="w-6 h-6 flex flex-col justify-center items-center">
+                    <span class="w-5 h-0.5 bg-cyan-400 rounded-full transition-all duration-300 mb-1"></span>
+                    <span class="w-5 h-0.5 bg-cyan-400 rounded-full transition-all duration-300 mb-1"></span>
+                    <span class="w-5 h-0.5 bg-cyan-400 rounded-full transition-all duration-300"></span>
+                </div>
+            </button>
+            
+            <!-- Mobile Menu Dropdown -->
+            <div id="mobile-menu-dropdown" class="absolute top-12 right-0 w-64 bg-black/95 backdrop-blur-md border border-cyan-400/20 rounded-lg shadow-2xl opacity-0 invisible transform -translate-y-2 transition-all duration-300">
+                <div class="p-4 space-y-2">
+                    <a href="#hero" class="flex items-center px-4 py-3 text-gray-300 hover:text-cyan-400 hover:bg-cyan-400/10 rounded-lg transition-all duration-200">
+                        <i data-lucide="home" class="w-5 h-5 mr-3"></i>
+                        <span>Home</span>
+                    </a>
+                    <a href="#about" class="flex items-center px-4 py-3 text-gray-300 hover:text-cyan-400 hover:bg-cyan-400/10 rounded-lg transition-all duration-200">
+                        <i data-lucide="user" class="w-5 h-5 mr-3"></i>
+                        <span>About</span>
+                    </a>
+                    <a href="#education" class="flex items-center px-4 py-3 text-gray-300 hover:text-cyan-400 hover:bg-cyan-400/10 rounded-lg transition-all duration-200">
+                        <i data-lucide="graduation-cap" class="w-5 h-5 mr-3"></i>
+                        <span>Education</span>
+                    </a>
+                    <a href="#skills" class="flex items-center px-4 py-3 text-gray-300 hover:text-cyan-400 hover:bg-cyan-400/10 rounded-lg transition-all duration-200">
+                        <i data-lucide="cpu" class="w-5 h-5 mr-3"></i>
+                        <span>Skills</span>
+                    </a>
+                    <a href="#experience" class="flex items-center px-4 py-3 text-gray-300 hover:text-cyan-400 hover:bg-cyan-400/10 rounded-lg transition-all duration-200">
+                        <i data-lucide="briefcase" class="w-5 h-5 mr-3"></i>
+                        <span>Experience</span>
+                    </a>
+                    <a href="#projects" class="flex items-center px-4 py-3 text-gray-300 hover:text-cyan-400 hover:bg-cyan-400/10 rounded-lg transition-all duration-200">
+                        <i data-lucide="folder-kanban" class="w-5 h-5 mr-3"></i>
+                        <span>Projects</span>
+                    </a>
+                    <a href="#contact" class="flex items-center px-4 py-3 text-gray-300 hover:text-cyan-400 hover:bg-cyan-400/10 rounded-lg transition-all duration-200">
+                        <i data-lucide="mail" class="w-5 h-5 mr-3"></i>
+                        <span>Contact</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+
+
+            <main class="relative z-10 w-full">
+            <!-- Hero Section -->
+            <section id="hero" class="relative min-h-screen flex items-center">
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+                    <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white mb-4 leading-tight">
+                        Hi, I'm Pranav Sahu
+                        <br>
+                        <span id="typing-text" class="bg-clip-text text-transparent bg-gradient-to-r from-sky-400 to-cyan-300">
+                            Full-Stack Developer
+                        </span>
+                    </h1>
+                    <p class="max-w-3xl mx-auto text-lg md:text-xl text-gray-300 mb-8">
+                        I build innovative and efficient web applications. Passionate about clean code, user experience, and cutting-edge technologies.
+                    </p>
+                    <div class="flex justify-center items-center space-x-4">
+                        <a href="#contact" class="shine-button bg-cyan-500 text-black font-semibold px-8 py-3 rounded-lg hover:bg-cyan-600 transition-all duration-300 transform hover:scale-105">
+                            Get In Touch
+                        </a>
+                        <a href="#projects" class="shine-button border-2 border-cyan-500 text-cyan-400 font-semibold px-8 py-3 rounded-lg hover:bg-cyan-500 hover:text-black transition-all duration-300 transform hover:scale-105">
+                            View My Work
+                        </a>
+                    </div>
+                    <!-- Social Media Icons -->
+                    <div class="flex justify-center space-x-6 mt-4 text-gray-400">
+                        <!-- GitHub -->
+                        <a href="https://github.com/pranavsahu99s" target="_blank" class="hover:text-white transition">
+                        <i data-lucide="github" class="w-6 h-6"></i>
+                        </a>
+                        <!-- LinkedIn -->
+                        <a href="https://www.linkedin.com/in/pranav-sahu-2353a5317" target="_blank" class="hover:text-blue-400 transition">
+                        <i data-lucide="linkedin" class="w-6 h-6"></i>
+                        </a>
+                        <!-- Instagram  -->
+                        <a href="https://instagram.com/pranavsahu99s" target="_blank" class="hover:text-pink-400 transition">
+                            <i data-lucide="instagram" class="w-6 h-6"></i>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- About Section -->
+            <section id="about" class="py-24 fade-in-up">
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-12">
+                        <h2 class="section-title text-3xl md:text-4xl font-bold text-white">About Me</h2>
+                        <div class="w-20 h-1 bg-cyan-400 mx-auto mt-2"></div>
+                    </div>
+                    <div class="flex flex-col md:flex-row items-center gap-12">
+                        <div class="md:w-1/3">
+                            <div class="w-64 h-64 md:w-80 md:h-80 mx-auto rounded-full overflow-hidden ring-4 ring-sky-500/50">
+                                 <img src="assets/my_prof_pic.jpg" alt="Pranav Sahu" class="w-full h-full object-cover">
+                            </div>
+                        </div>
+                        <div class="md:w-2/3 text-lg text-gray-300 space-y-4">
+                            <p>Hello! I'm Pranav, a developer with a knack for creating dynamic and responsive web applications. My journey into tech started with a fascination for how things work, which quickly evolved into a passion for building software that solves real-world problems.</p>
+                            <p>With a strong foundation in both front-end and back-end development, I enjoy the entire process of bringing an idea to life, from initial concept to deployment. I'm a lifelong learner, always eager to explore new technologies and improve my skill set.</p>
+                            <p>When I'm not coding, you can find me exploring IoT technologies, ricing linux, or contributing to open-source projects.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Education Section -->
+            <section id="education" class="py-24 fade-in-up">
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-12">
+                        <h2 class="section-title text-3xl md:text-4xl font-bold text-white">Education</h2>
+                        <div class="w-20 h-1 bg-cyan-400 mx-auto mt-2"></div>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                        <!-- Education Card 1 -->
+                        <div class="glass-effect p-6 rounded-xl">
+                             <p class="text-cyan-400 mb-1 font-semibold">2021 - 2023</p>
+                             <h3 class="text-xl font-bold text-white mb-2">Higher Secondary Education</h3>
+                             <p class="text-gray-300 font-medium mb-2">KPS Raipur</p>
+                             <p class="text-gray-400">Completed my higher secondary education, scoring 89%, with a strong foundation in mathematics, physics, and computer science.</p>
+                        </div>
+                        <!-- Education Card 2 -->
+                         <div class="glass-effect p-6 rounded-xl">
+                             <p class="text-cyan-400 mb-1 font-semibold">2024 - Present</p>
+                             <h3 class="text-xl font-bold text-white mb-2">B.Tech in Computer Science and Engineering</h3>
+                              <p class="text-gray-300 font-medium mb-2">Amity University Rajasthan</p>
+                             <p class="text-gray-400">Currently in 2nd year, maintaining a strong academic record while actively participating in coding and robotics competitions.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Skills Section -->
+            <section id="skills" class="py-24 fade-in-up">
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-12">
+                        <h2 class="section-title text-3xl md:text-4xl font-bold text-white">My Tech Stack</h2>
+                        <div class="w-20 h-1 bg-cyan-400 mx-auto mt-2"></div>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                        <!-- Skill Cards -->
+                        <div class="glass-effect p-6 rounded-xl flex flex-col items-center justify-center text-center"><i data-lucide="code-2" class="w-12 h-12 text-sky-400 mb-3 skill-card-icon"></i><h3 class="font-semibold text-lg">Python</h3></div>
+                        <div class="glass-effect p-6 rounded-xl flex flex-col items-center justify-center text-center"><i data-lucide="hash" class="w-12 h-12 text-sky-400 mb-3 skill-card-icon"></i><h3 class="font-semibold text-lg">C</h3></div>
+                        <div class="glass-effect p-6 rounded-xl flex flex-col items-center justify-center text-center"><i data-lucide="plus" class="w-12 h-12 text-sky-400 mb-3 skill-card-icon"></i><h3 class="font-semibold text-lg">C++</h3></div>
+                        <div class="glass-effect p-6 rounded-xl flex flex-col items-center justify-center text-center"><i data-lucide="file-json-2" class="w-12 h-12 text-sky-400 mb-3 skill-card-icon"></i><h3 class="font-semibold text-lg">JavaScript</h3></div>
+                        <div class="glass-effect p-6 rounded-xl flex flex-col items-center justify-center text-center"><i data-lucide="box" class="w-12 h-12 text-sky-400 mb-3 skill-card-icon"></i><h3 class="font-semibold text-lg">Node.js</h3></div>
+                        <div class="glass-effect p-6 rounded-xl flex flex-col items-center justify-center text-center"><i data-lucide="database" class="w-12 h-12 text-sky-400 mb-3 skill-card-icon"></i><h3 class="font-semibold text-lg">MySQL</h3></div>
+                        <div class="glass-effect p-6 rounded-xl flex flex-col items-center justify-center text-center"><i data-lucide="flask-conical" class="w-12 h-12 text-sky-400 mb-3 skill-card-icon"></i><h3 class="font-semibold text-lg">Flask</h3></div>
+                        <div class="glass-effect p-6 rounded-xl flex flex-col items-center justify-center text-center"><i data-lucide="terminal" class="w-12 h-12 text-sky-400 mb-3 skill-card-icon"></i><h3 class="font-semibold text-lg">Linux</h3></div>
+                        <div class="glass-effect p-6 rounded-xl flex flex-col items-center justify-center text-center"><i data-lucide="git-branch" class="w-12 h-12 text-sky-400 mb-3 skill-card-icon"></i><h3 class="font-semibold text-lg">Git & GitHub</h3></div>
+                        <div class="glass-effect p-6 rounded-xl flex flex-col items-center justify-center text-center"><i data-lucide="cpu" class="w-12 h-12 text-sky-400 mb-3 skill-card-icon"></i><h3 class="font-semibold text-lg">Arduino</h3></div>
+                        <!-- <div class="glass-effect p-6 rounded-xl flex flex-col items-center justify-center text-center"><i data-lucide="type" class="w-12 h-12 text-sky-400 mb-3 skill-card-icon"></i><h3 class="font-semibold text-lg">TypeScript</h3></div> -->
+                        <!-- <div class="glass-effect p-6 rounded-xl flex flex-col items-center justify-center text-center"><i data-lucide="cloud" class="w-12 h-12 text-sky-400 mb-3 skill-card-icon"></i><h3 class="font-semibold text-lg">Cloud Services</h3></div> -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Experience Section -->
+            <section id="experience" class="py-24 fade-in-up">
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-16">
+                        <h2 class="section-title text-3xl md:text-4xl font-bold text-white">Experience</h2>
+                        <div class="w-20 h-1 bg-cyan-400 mx-auto mt-2"></div>
+                    </div>
+                    <div class="relative timeline">
+                        <!-- Experience Item -->
+                        <div class="timeline-item mb-8">
+                            <div class="timeline-dot"></div>
+                            <div class="glass-effect p-6 rounded-xl">
+                                <div class="flex flex-col sm:flex-row gap-6">
+                                    <img src="assets/iitr_me2.jpg" alt="TechCorp Logo" class="w-24 h-24 sm:w-32 sm:h-32 rounded-lg object-cover flex-shrink-0">
+                                    <div>
+                                        <p class="text-cyan-400 mb-1 font-semibold">July 2025 - Present</p>
+                                        <h3 class="text-xl font-bold text-white mb-2">Senior Developer at RAIoT Club</h3>
+                                        <p class="text-gray-400">Senior Developer at the Club, building real world projects based on robotics and latest technologies.s</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Experience Item -->
+                        <div class="timeline-item mb-8">
+                            <div class="timeline-dot"></div>
+                            <div class="glass-effect p-6 rounded-xl">
+                                 <div class="flex flex-col sm:flex-row gap-6">
+                                    <img src="assets/iitr.jpg" alt="Innovate LLC Logo" class="w-24 h-24 sm:w-32 sm:h-32 rounded-lg object-cover flex-shrink-0">
+                                    <div>
+                                        <p class="text-cyan-400 mb-1 font-semibold">March 2025</p>
+                                        <h3 class="text-xl font-bold text-white mb-2">Cognizance IIT Roorkee</h3>
+                                        <p class="text-gray-400">Team Leader for Line Follower competition, and Improvised the logic of the bot for better results. Helped the team in various other technical events and hackathons.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Experience Item -->
+                        <div class="timeline-item mb-8">
+                            <div class="timeline-dot"></div>
+                            <div class="glass-effect p-6 rounded-xl">
+                                 <div class="flex flex-col sm:flex-row gap-6">
+                                    <img src="assets/20250120_020853.jpg" alt="Innovate LLC Logo" class="w-24 h-24 sm:w-32 sm:h-32 rounded-lg object-cover flex-shrink-0">
+                                    <div>
+                                        <p class="text-cyan-400 mb-1 font-semibold">January 2025</p>
+                                        <h3 class="text-xl font-bold text-white mb-2">Prometeo IIT Jodhpur</h3>
+                                        <p class="text-gray-400">Led my team in Line Follower competition, Web-Hackathon and Capture-The-Flag event. Implemented embedded programming in various robotics events.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Experience Item -->
+                        <div class="timeline-item mb-8">
+                            <div class="timeline-dot"></div>
+                            <div class="glass-effect p-6 rounded-xl">
+                                 <div class="flex flex-col sm:flex-row gap-6">
+                                    <img src="assets/sphinx.jpg" alt="Innovate LLC Logo" class="w-24 h-24 sm:w-32 sm:h-32 rounded-lg object-cover flex-shrink-0">
+                                    <div>
+                                        <p class="text-cyan-400 mb-1 font-semibold">November 2024</p>
+                                        <h3 class="text-xl font-bold text-white mb-2">Sphinx MNIT</h3>
+                                        <p class="text-gray-400">Participated in aero-modeling competition, and various other robotics events.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Experience Item -->
+                         <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="glass-effect p-6 rounded-xl">
+                                 <div class="flex flex-col sm:flex-row gap-6">
+                                    <img src="assets/raiot-logo.jpeg" alt="WebSolutions Logo" class="w-24 h-24 sm:w-32 sm:h-32 rounded-lg object-cover flex-shrink-0">
+                                    <div>
+                                        <p class="text-cyan-400 mb-1 font-semibold">Sept 2024 - Mar 2025</p>
+                                        <h3 class="text-xl font-bold text-white mb-2">Junior Developer at RAIoT Club</h3>
+                                        <p class="text-gray-400">Worked on various projects related to IoT and robotics, using various technologies like Arduino, ESP32, etc.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Projects Section -->
+            <section id="projects" class="py-24 fade-in-up">
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-12">
+                        <h2 class="section-title text-3xl md:text-4xl font-bold text-white">Featured Projects</h2>
+                        <div class="w-20 h-1 bg-cyan-400 mx-auto mt-2"></div>
+                    </div>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <!-- Project Card 1 -->
+                        <div class="glass-effect rounded-xl overflow-hidden group">
+                            <img src="assets/rfid.jpeg" alt="Project 1" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300">
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold text-white mb-2">Attendance System</h3>
+                                <p class="text-gray-400 mb-4 project-description">A full-featured IoT-based attendance solution that combines a physical check-in device with a powerful web-based backend. A person can clock in using an RFID card or a PIN on a numpad, with an LCD for instant feedback. The system features a Django web portal for administration and seamlessly syncs all attendance data in real-time directly to a Google Sheet, making record-keeping simple and accessible.</p>
+                                <div class="flex flex-wrap gap-2 mb-4 project-tech">
+                                    <span class="bg-cyan-900/50 text-cyan-300 text-xs font-semibold px-2.5 py-1 rounded-full">ESP</span>
+                                    <span class="bg-cyan-900/50 text-cyan-300 text-xs font-semibold px-2.5 py-1 rounded-full">Python</span>
+                                    <span class="bg-cyan-900/50 text-cyan-300 text-xs font-semibold px-2.5 py-1 rounded-full">Django</span>
+                                    <span class="bg-cyan-900/50 text-cyan-300 text-xs font-semibold px-2.5 py-1 rounded-full">Google Sheets API</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-4">
+                                        <a href="#" class="text-sky-400 hover:text-sky-300 transition-colors"><i data-lucide="github" class="w-6 h-6"></i></a>
+                                        <a href="#" class="text-sky-400 hover:text-sky-300 transition-colors"><i data-lucide="external-link" class="w-6 h-6"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Project Card 2 -->
+                        <div class="glass-effect rounded-xl overflow-hidden group">
+                            <img src="assets/line-follower.jpg" alt="Project 2" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300">
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold text-white mb-2">Line Follower Bot</h3>
+                                <p class="text-gray-400 mb-4 project-description">An Arduino-based robot using a PID algorithm and an IR sensor array for ultra-smooth line following. It also implements a maze-solving algorithm to autonomously navigate complex intersections and paths. A TB6 motor driver provides precise motor control.</p>
+                                <div class="flex flex-wrap gap-2 mb-4 project-tech">
+                                    <span class="bg-cyan-900/50 text-cyan-300 text-xs font-semibold px-2.5 py-1 rounded-full">Arduino</span>
+                                    <span class="bg-cyan-900/50 text-cyan-300 text-xs font-semibold px-2.5 py-1 rounded-full">IOT</span>
+                                    <span class="bg-cyan-900/50 text-cyan-300 text-xs font-semibold px-2.5 py-1 rounded-full">C++</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-4">
+                                        <a href="#" class="text-sky-400 hover:text-sky-300 transition-colors"><i data-lucide="github" class="w-6 h-6"></i></a>
+                                        <a href="#" class="text-sky-400 hover:text-sky-300 transition-colors"><i data-lucide="external-link" class="w-6 h-6"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Project Card 3 -->
+                        <div class="glass-effect rounded-xl overflow-hidden group">
+                            <img src="assets/Portfolio-Desenvolvedor-Web.webp" alt="Project 3" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300">
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold text-white mb-2">Portfolio Website</h3>
+                                <p class="text-gray-400 mb-4 project-description">A minimalist developer portfolio built from scratch with vanilla HTML, CSS, and JavaScript. It features a dynamic particle animation background and subtle interactive effects to create a clean, modern, and engaging user experience.</p>
+                                <div class="flex flex-wrap gap-2 mb-4 project-tech">
+                                    <span class="bg-cyan-900/50 text-cyan-300 text-xs font-semibold px-2.5 py-1 rounded-full">HTML</span>
+                                    <span class="bg-cyan-900/50 text-cyan-300 text-xs font-semibold px-2.5 py-1 rounded-full">CSS</span>
+                                    <span class="bg-cyan-900/50 text-cyan-300 text-xs font-semibold px-2.5 py-1 rounded-full">JavaScript</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-4">
+                                        <a href="#" class="text-sky-400 hover:text-sky-300 transition-colors"><i data-lucide="github" class="w-6 h-6"></i></a>
+                                        <a href="#" class="text-sky-400 hover:text-sky-300 transition-colors"><i data-lucide="external-link" class="w-6 h-6"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Resume Section -->
+            <section id="resume" class="py-24 fade-in-up">
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <h2 class="section-title text-3xl md:text-4xl font-bold text-white">Interested in my work?</h2>
+                    <div class="w-20 h-1 bg-cyan-400 mx-auto mt-2 mb-8"></div>
+                    <p class="max-w-2xl mx-auto text-lg text-gray-300 mb-8">
+                        You can view and download my full resume to see more details about my skills and experience.
+                    </p>
+                    <a href="#" class="shine-button bg-cyan-500 text-black font-semibold px-8 py-4 rounded-lg hover:bg-cyan-600 transition-all duration-300 transform hover:scale-105 inline-flex items-center">
+                        <i data-lucide="download" class="w-5 h-5 mr-2"></i>
+                        Download Resume
+                    </a>
+                </div>
+            </section>
+
+            
+            <!-- Contact Section -->
+            <section id="contact" class="py-24 fade-in-up">
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-12">
+                        <h2 class="section-title text-3xl md:text-4xl font-bold text-white">Get In Touch</h2>
+                        <div class="w-20 h-1 bg-cyan-400 mx-auto mt-2"></div>
+                    </div>
+                    <div class="max-w-3xl mx-auto">
+                        <form id="contact-form" action="https://api.web3forms.com/submit" method="POST">
+                            <!-- ✅ Required Access Key -->
+                            <input type="hidden" name="access_key" value="bc7da4a5-2f59-481c-9395-8464fb8034f8">
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <input type="text" id="contact-name" name="name" placeholder="Your Name"
+                                    class="form-input w-full p-3 rounded-lg text-white focus:ring-2 focus:ring-cyan-500" required>
+                                <input type="email" id="contact-email" name="email" placeholder="Your Email"
+                                    class="form-input w-full p-3 rounded-lg text-white focus:ring-2 focus:ring-cyan-500" required>
+                            </div>
+                            <div class="mb-6">
+                                <input type="text" id="contact-subject" name="subject" placeholder="Subject"
+                                    class="form-input w-full p-3 rounded-lg text-white focus:ring-2 focus:ring-cyan-500" required>
+                            </div>
+                            <div class="mb-6">
+                                <textarea id="contact-message" name="message" rows="5" placeholder="Your Message"
+                                    class="form-input w-full p-3 rounded-lg text-white focus:ring-2 focus:ring-cyan-500" required></textarea>
+                            </div>
+                            <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+                                <button type="submit"
+                                    class="shine-button bg-cyan-500 text-black font-semibold px-10 py-3 rounded-lg hover:bg-cyan-600 transition-all duration-300 transform hover:scale-105 w-full sm:w-auto">
+                                    Send Message
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- ✅ Popup Notification -->
+                        <div id="form-status" class="hidden mt-6 p-4 rounded-lg text-center font-semibold"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 relative z-10">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-400 mb-4 md:mb-0">&copy; 2025 Pranav Sahu. All Rights Reserved.</p>
+                <div class="flex items-center space-x-6 mr-14">
+                    <a href="https://github.com/pranavsahu99s" target="_blank" class="text-gray-400 hover:text-sky-400 transition-colors"><i data-lucide="github" class="w-6 h-6"></i></a>
+                    <a href="https://www.linkedin.com/in/pranav-sahu-2353a5317" target="_blank" class="text-gray-400 hover:text-sky-400 transition-colors"><i data-lucide="linkedin" class="w-6 h-6"></i></a>
+                    <a href="https://instagram.com/pranavsahu99s" target="_blank" class="text-gray-400 hover:text-sky-400 transition-colors"><i data-lucide="instagram" class="w-6 h-6"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Smooth Scroll to Top Button -->
+    <button id="scroll-to-top" class="fixed bottom-8 right-8 bg-cyan-500 hover:bg-cyan-600 text-black font-bold p-3 rounded-full shadow-lg transition-all duration-300 transform hover:scale-110 hover:-translate-y-1 opacity-0 pointer-events-none z-40">
+        <i data-lucide="arrow-up" class="w-6 h-6"></i>
+    </button>
+    
+
+    
+
+
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+        
+        // Re-initialize icons after a short delay to ensure they load
+        setTimeout(() => {
+            lucide.createIcons();
+            console.log('Icons initialized');
+        }, 100);
+
+        // --- Enhanced Scroll Progress Bar ---
+        const scrollProgress = document.querySelector('.scroll-progress');
+        const scrollToTopBtn = document.getElementById('scroll-to-top');
+        
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.pageYOffset;
+            const docHeight = document.body.offsetHeight - window.innerHeight;
+            const scrollPercent = (scrollTop / docHeight) * 100;
+            scrollProgress.style.width = scrollPercent + '%';
+            
+            // Show/hide scroll to top button
+            if (scrollTop > 300) {
+                scrollToTopBtn.style.opacity = '1';
+                scrollToTopBtn.style.pointerEvents = 'auto';
+            } else {
+                scrollToTopBtn.style.opacity = '0';
+                scrollToTopBtn.style.pointerEvents = 'none';
+            }
+        });
+        
+        // Scroll to top button functionality
+        scrollToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        // -- script for handling pop up msgs of forms ----
+                document.getElementById("contact-form").addEventListener("submit", async function(e) {
+            e.preventDefault();
+
+            const form = e.target;
+            const statusBox = document.getElementById("form-status");
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch(form.action, {
+                    method: form.method,
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    statusBox.textContent = "✅ Message sent successfully!";
+                    statusBox.className = "mt-6 p-4 rounded-lg text-center font-semibold bg-green-600 text-white";
+                    form.reset();
+                } else {
+                    statusBox.textContent = "❌ Failed to send message. Try again!";
+                    statusBox.className = "mt-6 p-4 rounded-lg text-center font-semibold bg-red-600 text-white";
+                }
+            } catch (error) {
+                statusBox.textContent = "⚠️ Network error. Please try again later.";
+                statusBox.className = "mt-6 p-4 rounded-lg text-center font-semibold bg-yellow-600 text-white";
+            }
+
+            statusBox.classList.remove("hidden");
+
+            // ✅ Auto-hide after 5 seconds
+            setTimeout(() => {
+                statusBox.classList.add("hidden");
+            }, 5000);
+        });
+
+
+        // --- Enhanced Active nav link highlighting with smooth transitions ---
+        const sections = document.querySelectorAll('section');
+        const mainNavListItems = document.querySelectorAll('#main-nav li, .mobile-menu-overlay li');
+        const navIndicator = document.getElementById('nav-indicator');
+        
+        // Navigation click handlers - only scroll, no active state manipulation
+        mainNavListItems.forEach(li => {
+            const link = li.querySelector('a');
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('href');
+                const targetSection = document.querySelector(targetId);
+                
+                if (targetSection) {
+                    // Remove any existing active classes immediately
+                    mainNavListItems.forEach(item => item.classList.remove('active'));
+                    
+                    // Smooth scroll to target
+                    targetSection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Mobile menu functionality
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const mobileMenuDropdown = document.getElementById('mobile-menu-dropdown');
+        const hamburgerSpans = mobileMenuToggle.querySelectorAll('span');
+        
+        mobileMenuToggle.addEventListener('click', () => {
+            // Toggle dropdown visibility
+            mobileMenuDropdown.classList.toggle('opacity-0');
+            mobileMenuDropdown.classList.toggle('invisible');
+            mobileMenuDropdown.classList.toggle('-translate-y-2');
+            mobileMenuDropdown.classList.toggle('opacity-100');
+            mobileMenuDropdown.classList.toggle('visible');
+            mobileMenuDropdown.classList.toggle('translate-y-0');
+            
+            // Animate hamburger to X
+            hamburgerSpans[0].classList.toggle('rotate-45');
+            hamburgerSpans[0].classList.toggle('translate-y-1.5');
+            hamburgerSpans[1].classList.toggle('opacity-0');
+            hamburgerSpans[2].classList.toggle('-rotate-45');
+            hamburgerSpans[2].classList.toggle('-translate-y-1.5');
+        });
+        
+        // Close mobile menu when clicking on a link
+        const mobileMenuLinks = document.querySelectorAll('#mobile-menu-dropdown a');
+        mobileMenuLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                // Close dropdown
+                mobileMenuDropdown.classList.add('opacity-0', 'invisible', '-translate-y-2');
+                mobileMenuDropdown.classList.remove('opacity-100', 'visible', 'translate-y-0');
+                
+                // Reset hamburger
+                hamburgerSpans[0].classList.remove('rotate-45', 'translate-y-1.5');
+                hamburgerSpans[1].classList.remove('opacity-0');
+                hamburgerSpans[2].classList.remove('-rotate-45', '-translate-y-1.5');
+            });
+        });
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!mobileMenuToggle.contains(e.target) && !mobileMenuDropdown.contains(e.target)) {
+                // Close dropdown
+                mobileMenuDropdown.classList.add('opacity-0', 'invisible', '-translate-y-2');
+                mobileMenuDropdown.classList.remove('opacity-100', 'visible', 'translate-y-0');
+                
+                // Reset hamburger
+                hamburgerSpans[0].classList.remove('rotate-45', 'translate-y-1.5');
+                hamburgerSpans[1].classList.remove('opacity-0');
+                hamburgerSpans[2].classList.remove('-rotate-45', '-translate-y-1.5');
+            }
+        });
+        
+
+
+        // Function to hide indicator smoothly
+        function hideIndicator() {
+            if (navIndicator) {
+                navIndicator.style.opacity = '0';
+                navIndicator.style.transition = 'opacity 0.2s ease';
+            }
+        }
+        
+        // Clean navigation hover effects - indicator only shows on hover
+        let currentHoveredItem = null;
+        
+        mainNavListItems.forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                currentHoveredItem = item;
+                
+                if (navIndicator) {
+                    // Show indicator at this item's position
+                    navIndicator.style.transition = 'none';
+                    navIndicator.style.top = `${item.offsetTop}px`;
+                    navIndicator.style.height = `${item.offsetHeight}px`;
+                    navIndicator.style.opacity = '1';
+                    navIndicator.style.backgroundColor = 'rgba(56, 189, 248, 0.2)';
+                    navIndicator.style.boxShadow = '0 0 30px rgba(56, 189, 248, 0.3)';
+                    
+                    // Re-enable transitions
+                    setTimeout(() => {
+                        navIndicator.style.transition = 'all 0.3s ease';
+                    }, 10);
+                }
+            });
+            
+            item.addEventListener('mouseleave', () => {
+                currentHoveredItem = null;
+                
+                if (navIndicator) {
+                    // Hide indicator smoothly
+                    navIndicator.style.opacity = '0';
+                    navIndicator.style.transition = 'opacity 0.2s ease';
+                }
+            });
+        });
+        
+        // Hide indicator when leaving the entire navigation area
+        document.getElementById('main-nav').addEventListener('mouseleave', () => {
+            currentHoveredItem = null;
+            if (navIndicator) {
+                navIndicator.style.opacity = '0';
+                navIndicator.style.transition = 'opacity 0.2s ease';
+            }
+        });
+
+        // --- Enhanced Scroll Detection ---
+        
+        function updateActiveSection() {
+            let current = 'hero';
+            const scrollTop = window.pageYOffset;
+            const windowHeight = window.innerHeight;
+            
+            // Simple and reliable section detection
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                const sectionId = section.getAttribute('id');
+                
+                // Check if the section is currently in the middle of the viewport
+                if (scrollTop + windowHeight / 2 >= sectionTop && scrollTop + windowHeight / 2 < sectionTop + sectionHeight) {
+                    current = sectionId;
+                }
+            });
+
+            // Special check for the last section when scrolled to the bottom
+            const bottomOfPage = (scrollTop + windowHeight) >= document.body.offsetHeight - 50;
+            if (bottomOfPage) {
+                current = sections[sections.length - 1].id;
+            }
+
+            // Always remove all active classes first, then set only the current one
+            mainNavListItems.forEach(li => {
+                li.classList.remove('active');
+            });
+            
+            // Set active class only for the current section
+            const currentNavItem = document.querySelector(`[data-section="${current}"]`);
+            if (currentNavItem) {
+                currentNavItem.classList.add('active');
+            }
+        }
+
+        // Simple and reliable scroll event listener
+        window.addEventListener('scroll', () => {
+            // Update active section immediately on scroll
+            updateActiveSection();
+        });
+        
+        // Also trigger on page load to set initial active state
+        document.addEventListener('DOMContentLoaded', () => {
+            updateActiveSection();
+        });
+        
+        // Trigger on window resize to handle any layout changes
+        window.addEventListener('resize', () => {
+            updateActiveSection();
+        });
+
+
+
+        // --- Enhanced Typing animation with smoother transitions ---
+        const typingText = document.getElementById('typing-text');
+        const roles = ["Full-Stack Developer", "Software Engineer", "Robotics Enthusiast", "Creative Coder", "Problem Solver"];
+        let roleIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+
+        function type() {
+            const currentRole = roles[roleIndex];
+            if (isDeleting) {
+                typingText.textContent = currentRole.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                typingText.textContent = currentRole.substring(0, charIndex + 1);
+                charIndex++;
+            }
+
+            if (!isDeleting && charIndex === currentRole.length) {
+                setTimeout(() => isDeleting = true, 2000);
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                roleIndex = (roleIndex + 1) % roles.length;
+            }
+
+            const typeSpeed = isDeleting ? 100 : 200;
+            setTimeout(type, typeSpeed);
+        }
+        document.addEventListener('DOMContentLoaded', type);
+
+        // --- Enhanced Interactive Particle Background ---
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const mouse = { x: null, y: null, radius: 200 }; // Larger interaction area for black theme
+
+        window.addEventListener('mousemove', (event) => {
+            mouse.x = event.x;
+            mouse.y = event.y;
+        });
+        window.addEventListener('mouseout', () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 3 + 1;
+                this.speedX = Math.random() * 1.5 - 0.75;
+                this.speedY = Math.random() * 1.5 - 0.75;
+                this.opacity = Math.random() * 0.8 + 0.2;
+                this.color = Math.random() > 0.5 ? '#00ffff' : '#0080ff';
+            }
+            update() {
+                if (this.x > canvas.width || this.x < 0) this.speedX *= -1;
+                if (this.y > canvas.height || this.y < 0) this.speedY *= -1;
+                this.x += this.speedX;
+                this.y += this.speedY;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.opacity;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            let numberOfParticles = (canvas.width * canvas.height) / 8000; // More particles for black theme
+            for (let i = 0; i < numberOfParticles; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function connectParticles() {
+            let opacityValue = 1;
+            for (let a = 0; a < particles.length; a++) {
+                // Connect particles to each other
+                for (let b = a; b < particles.length; b++) {
+                    let distance = Math.sqrt(
+                        ((particles[a].x - particles[b].x) * (particles[a].x - particles[b].x))
+                        + ((particles[a].y - particles[b].y) * (particles[a].y - particles[b].y))
+                    );
+                    if (distance < 120) {
+                        opacityValue = 1 - (distance/120);
+                        ctx.strokeStyle = `rgba(0, 255, 255, ${opacityValue * 0.8})`;
+                        ctx.lineWidth = 1.5;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[a].x, particles[a].y);
+                        ctx.lineTo(particles[b].x, particles[b].y);
+                        ctx.stroke();
+                    }
+                }
+                // Connect particles to mouse
+                if (mouse.x) {
+                     let distanceToMouse = Math.sqrt(
+                        ((particles[a].x - mouse.x) * (particles[a].x - mouse.x))
+                        + ((particles[a].y - mouse.y) * (particles[a].y - mouse.y))
+                    );
+                    if (distanceToMouse < mouse.radius) {
+                        opacityValue = 1 - (distanceToMouse/mouse.radius);
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${opacityValue * 1})`;
+                        ctx.lineWidth = 2.5;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[a].x, particles[a].y);
+                        ctx.lineTo(mouse.x, mouse.y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+            }
+            connectParticles();
+            requestAnimationFrame(animateParticles);
+        }
+
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            initParticles();
+        });
+
+        resizeCanvas();
+        initParticles();
+        animateParticles();
+
+        // --- Enhanced Scroll-triggered animations with Intersection Observer ---
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    
+                    // Add staggered animation for child elements
+                    const children = entry.target.querySelectorAll('.scroll-fade');
+                    children.forEach((child, index) => {
+                        setTimeout(() => {
+                            child.classList.add('visible');
+                        }, index * 100);
+                    });
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in-up').forEach(el => {
+            observer.observe(el);
+        });
+
+        // --- Enhanced Section Title Animation ---
+        const titleObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const title = entry.target;
+                    if (!title.dataset.animated) {
+                        const text = title.textContent;
+                        title.innerHTML = '';
+                        text.split('').forEach((char, index) => {
+                            const span = document.createElement('span');
+                            span.textContent = char === ' ' ? '\u00A0' : char;
+                            span.style.transitionDelay = `${index * 50}ms`;
+                            title.appendChild(span);
+                        });
+                        title.classList.add('visible');
+                        title.dataset.animated = true;
+                    }
+                    observer.unobserve(title);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('.section-title').forEach(title => {
+            titleObserver.observe(title);
+        });
+
+        // --- Enhanced Navigation Smoothness ---
+        
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Smooth scroll to top functionality
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Add keyboard navigation support
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Home') {
+                e.preventDefault();
+                scrollToTop();
+            }
+        });
+
+        // --- Enhanced Performance with RequestAnimationFrame ---
+        function smoothScrollTo(targetY, duration = 1000) {
+            const startY = window.pageYOffset;
+            const distance = targetY - startY;
+            let startTime = null;
+
+            function animation(currentTime) {
+                if (startTime === null) startTime = currentTime;
+                const timeElapsed = currentTime - startTime;
+                const run = easeInOutCubic(timeElapsed, startY, distance, duration);
+                window.scrollTo(0, run);
+                if (timeElapsed < duration) requestAnimationFrame(animation);
+            }
+
+            requestAnimationFrame(animation);
+        }
+
+        function easeInOutCubic(t, b, c, d) {
+            t /= d / 2;
+            if (t < 1) return c / 2 * t * t * t + b;
+            t -= 2;
+            return c / 2 * (t * t * t + 2) + b;
+        }
+
+
+
+
+    </script>
+</body>
+</html>
+
