@@ -1,0 +1,421 @@
+body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            scroll-behavior: smooth;
+        }
+        
+        /* --- Enhanced Smooth Scrolling --- */
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 2rem;
+        }
+        
+        /* --- Scroll Progress Bar --- */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: linear-gradient(90deg, #00ffff, #0080ff, #8000ff);
+            z-index: 9999;
+            transition: width 0.1s ease-out;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+        }
+        /* --- Full Page Animated Background --- */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+        }
+        
+        /* --- Enhanced Responsive Navigation Bar --- */
+        #main-nav {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            width: 80px; /* Collapsed width */
+            transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-right: 1px solid rgba(0, 255, 255, 0.2);
+            padding: 1rem 0;
+            display: flex;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.1);
+            z-index: 1000;
+        }
+        
+        @media (min-width: 1024px) {
+            #main-nav:hover {
+                width: 280px; /* Slightly wider for better text display */
+                transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            }
+        }
+        
+        /* Hide desktop navigation on mobile */
+        @media (max-width: 1023px) {
+            #main-nav {
+                display: none;
+            }
+        }
+        
+
+
+        #main-nav ul {
+            list-style: none;
+            padding: 2rem 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center icons by default */
+            justify-content: space-around;
+            height: 100%;
+            width: 100%;
+            position: relative;
+        }
+        
+        /* Ensure navigation items are properly aligned */
+        #main-nav li {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+        
+        @media (min-width: 1024px) {
+            #main-nav:hover ul {
+                align-items: flex-start; /* Align left when expanded */
+            }
+        }
+
+        #main-nav li {
+            width: 100%;
+            padding: 0 0.5rem;
+            z-index: 2; /* Ensure links are above the indicator */
+            transition: transform 0.2s ease;
+        }
+        
+        #main-nav li:hover {
+            transform: translateX(5px);
+        }
+        #main-nav a {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #e0e0e0;
+            text-decoration: none;
+            white-space: nowrap;
+            border-radius: 9999px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #main-nav a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        #main-nav a:hover::before {
+            left: 100%;
+        }
+        
+        #main-nav li.active a {
+            color: #38bdf8;
+            background: rgba(56, 189, 248, 0.1);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+        }
+        .nav-text {
+            margin-left: 1.5rem;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+            transform: translateX(-10px);
+        }
+        
+        @media (min-width: 1024px) {
+            #main-nav:hover .nav-text {
+                opacity: 1;
+                transform: translateX(0);
+                transition-delay: 0.1s;
+            }
+        }
+        
+        /* Ensure icons are always visible */
+        #main-nav .nav-icon {
+            opacity: 1;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #e0e0e0;
+            width: 1.5rem;
+            height: 1.5rem;
+            flex-shrink: 0;
+        }
+        
+        #main-nav a:hover .nav-icon {
+            color: #00ffff;
+        }
+        
+        #nav-indicator {
+            position: absolute;
+            left: 0.5rem;
+            width: calc(100% - 1rem);
+            height: 52px; /* Match link height */
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 128, 255, 0.1));
+            border-radius: 9999px;
+            z-index: 1;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.2);
+            opacity: 0; /* Hidden by default, only shows on hover */
+            pointer-events: none; /* Don't interfere with hover events */
+        }
+        
+        #nav-indicator::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 4px;
+            height: 4px;
+            background: #00ffff;
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 1);
+        }
+
+        main {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(20, 20, 20, 0.5));
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+            flex-grow: 1;
+        }
+        
+
+
+        /* --- Enhanced 3D Glass Effect Card --- */
+        .glass-effect {
+            background: rgba(0, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(0, 255, 255, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        .glass-effect:hover {
+            background: rgba(0, 255, 255, 0.08);
+            transform: perspective(1000px) rotateX(5deg) rotateY(-5deg) scale(1.05);
+            box-shadow: 0 25px 70px 0 rgba(0, 0, 0, 0.6), 0 0 40px rgba(0, 255, 255, 0.4);
+        }
+        /* --- Enhanced Animated Skill Icons --- */
+        .skill-card-icon {
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .glass-effect:hover .skill-card-icon {
+            transform: scale(1.2) rotate(10deg);
+            color: #00ffff;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, #00ffff, transparent);
+        }
+        .timeline-item {
+            position: relative;
+            width: 50%;
+            transition: transform 0.3s ease;
+        }
+        .timeline-item:hover {
+            transform: translateY(-5px);
+        }
+        .timeline-item:nth-child(odd) {
+            padding-right: 2rem;
+            left: 0;
+        }
+        .timeline-item:nth-child(even) {
+            padding-left: 2rem;
+            left: 50%;
+        }
+        .timeline-dot {
+            content: '';
+            position: absolute;
+            top: 1.25rem;
+            width: 1rem;
+            height: 1rem;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00ffff, #0080ff);
+            border: 3px solid #000000;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.6);
+            transition: all 0.3s ease;
+        }
+        .timeline-item:hover .timeline-dot {
+            transform: scale(1.2);
+            box-shadow: 0 0 35px rgba(0, 255, 255, 1);
+        }
+        .timeline-item:nth-child(odd) .timeline-dot {
+            right: -0.5rem;
+        }
+        .timeline-item:nth-child(even) .timeline-dot {
+            left: -0.5rem;
+        }
+        @media (max-width: 768px) {
+            .timeline::before {
+                left: 0.5rem;
+                transform: translateX(0);
+            }
+            .timeline-item {
+                width: 100%;
+                padding-left: 2.5rem;
+                padding-right: 0;
+                left: 0 !important;
+            }
+            .timeline-dot {
+                left: 0 !important;
+            }
+        }
+        .form-input {
+            background: rgba(0, 255, 255, 0.05);
+            border: 1px solid rgba(0, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .form-input:focus {
+            background: rgba(0, 255, 255, 0.08);
+            outline: none;
+            border-color: #00ffff;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .fade-in-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        #typing-text::after {
+            content: '|';
+            animation: blink 0.7s infinite;
+        }
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        /* --- Enhanced Button Shine Effect --- */
+        .shine-button {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .shine-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 75%;
+            height: 100%;
+            background: linear-gradient(120deg, rgba(255,255,255,0) 20%, rgba(255,255,255,0.3), rgba(255,255,255,0) 80%);
+            transform: skewX(-25deg);
+            transition: left 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .shine-button:hover::before {
+            left: 150%;
+        }
+        .shine-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 255, 255, 0.4);
+        }
+        /* --- Enhanced Animated Section Title --- */
+        .section-title span {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(30px) scale(0.8);
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .section-title.visible span {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+        
+        /* --- Smooth Section Transitions --- */
+        section {
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        
+        /* --- Enhanced Scroll Animations --- */
+        .scroll-fade {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .scroll-fade.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* --- Navigation Link Hover Effects --- */
+        #main-nav a:hover {
+            color: #00ffff;
+            background: rgba(0, 255, 255, 0.08);
+            transform: scale(1.05);
+        }
+        
+        /* --- Active Navigation State Enhancement --- */
+        #main-nav li.active a {
+            background: rgba(0, 255, 255, 0.15);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
+        }
+        
+        /* --- Smooth Icon Transitions --- */
+        #main-nav i {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        #main-nav a:hover i {
+            transform: scale(1.1);
+            color: #00ffff;
+        }
+        
+        /* --- Enhanced Scroll to Top Button --- */
+        #scroll-to-top {
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+        
+        #scroll-to-top:hover {
+            box-shadow: 0 15px 50px rgba(0, 255, 255, 0.6);
+        }
+        
+        /* --- Enhanced Page Transitions --- */
+        * {
+            scroll-behavior: smooth;
+        }
+        
+        /* --- Improved Focus States --- */
+        a:focus, button:focus, input:focus, textarea:focus {
+            /* outline: 2px solid #00ffff; */
+            outline: none;
+            outline-offset: 2px;
+        }
