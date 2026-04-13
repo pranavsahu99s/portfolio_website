@@ -77,15 +77,17 @@ def login_required(f):
 # Public Routes
 @app.route('/')
 def home():
+    site_content = SiteContent.query.first()
     skills = Skill.query.all()
-    experiences = Experience.query.all()
-    projects = Project.query.all()
-    educations = Education.query.all()
+    experiences = Experience.query.order_by(Experience.display_order.asc()).all()
+    projects = Project.query.order_by(Project.display_order.asc()).all()
+    educations = Education.query.order_by(Education.display_order.asc()).all()
     
     for project in projects:
         project.tag_list = [tag.strip() for tag in project.tags.split(',') if tag.strip()]
 
     return render_template('index.html', 
+                           site_content=site_content,
                            skills=skills, 
                            experiences=experiences, 
                            projects=projects, 
@@ -112,11 +114,51 @@ def logout():
 @app.route('/admin')
 @login_required
 def admin():
+    site_content = SiteContent.query.first()
     skills = Skill.query.all()
-    experiences = Experience.query.all()
-    return render_template('admin.html', skills=skills, experiences=experiences)
+    experiences = Experience.query.order_by(Experience.display_order.asc()).all()
+    projects = Project.query.order_by(Project.display_order.asc()).all()
+    educations = Education.query.order_by(Education.display_order.asc()).all()
+    return render_template('admin.html', 
+                           site_content=site_content, 
+                           skills=skills, 
+                           experiences=experiences,
+                           projects=projects,
+                           educations=educations)
 
-# CRUD Routes
+# --- Site Content Route ---
+@app.route('/admin/sitecontent/update', methods=['POST'])
+@login_required
+def admin_update_site_content():
+    content = SiteContent.query.first()
+    if not content:
+        content = SiteContent()
+        db.session.add(content)
+        
+    content.hero_title = request.form.get('hero_title') or content.hero_title
+    content.hero_subtitle = request.form.get('hero_subtitle') or content.hero_subtitle
+    content.hero_description = request.form.get('hero_description') or content.hero_description
+    content.about_text = request.form.get('about_text') or content.about_text
+    
+    if 'about_image' in request.files:
+        img = request.files['about_image']
+        if img.filename:
+            filename = secure_filename(img.filename)
+            img.save(os.path.join(app.root_path, 'static/assets', filename))
+            content.about_image_path = filename
+            
+    if 'resume_file' in request.files:
+        res = request.files['resume_file']
+        if res.filename:
+            filename = secure_filename(res.filename)
+            res.save(os.path.join(app.root_path, 'static/assets', filename))
+            content.resume_file_path = filename
+
+    db.session.commit()
+    flash('Site content updated successfully!', 'success')
+    return redirect(url_for('admin'))
+
+# --- Skills CRUD ---
 @app.route('/admin/skill/add', methods=['POST'])
 @login_required
 def admin_add_skill():
@@ -137,6 +179,7 @@ def admin_delete_skill(id):
     flash('Skill deleted.', 'success')
     return redirect(url_for('admin'))
 
+# --- Experience CRUD ---
 @app.route('/admin/experience/add', methods=['POST'])
 @login_required
 def admin_add_experience():
@@ -145,12 +188,11 @@ def admin_add_experience():
     company = request.form.get('company')
     description = request.form.get('description')
     
-    # Simple file handle
     image_path = None
     if 'image' in request.files:
         img = request.files['image']
         if img.filename:
-            image_path = img.filename
+            image_path = secure_filename(img.filename)
             img.save(os.path.join(app.root_path, 'static/assets', image_path))
             
     if period and title and company:
@@ -166,6 +208,88 @@ def admin_delete_experience(id):
     db.session.delete(exp)
     db.session.commit()
     flash('Experience deleted.', 'success')
+    return redirect(url_for('admin'))
+
+# --- Project CRUD ---
+@app.route('/admin/project/add', methods=['POST'])
+@login_required
+def admin_add_project():
+    title = request.form.get('title')
+    description = request.form.get('description')
+    tags = request.form.get('tags')
+    github_link = request.form.get('github_link')
+    external_link = request.form.get('external_link')
+    
+    image_path = None
+    if 'image' in request.files:
+        img = request.files['image']
+        if img.filename:
+            image_path = secure_filename(img.filename)
+            img.save(os.path.join(app.root_path, 'static/assets', image_path))
+            
+    if title and description:
+        db.session.add(Project(title=title, description=description, tags=tags, image_path=image_path, github_link=github_link, external_link=external_link))
+        db.session.commit()
+        flash('Project added successfully!', 'success')
+    return redirect(url_for('admin'))
+
+@app.route('/admin/project/delete/<int:id>', methods=['POST'])
+@login_required
+def admin_delete_project(id):
+    proj = Project.query.get_or_404(id)
+    db.session.delete(proj)
+    db.session.commit()
+    flash('Project deleted.', 'success')
+    return redirect(url_for('admin'))
+
+# --- Education CRUD ---
+@app.route('/admin/education/add', methods=['POST'])
+@login_required
+def admin_add_education():
+    period = request.form.get('period')
+    degree = request.form.get('degree')
+    institution = request.form.get('institution')
+    description = request.form.get('description')
+    
+    if period and degree and institution:
+        db.session.add(Education(period=period, degree=degree, institution=institution, description=description))
+        db.session.commit()
+        flash('Education added successfully!', 'success')
+    return redirect(url_for('admin'))
+
+@app.route('/admin/education/delete/<int:id>', methods=['POST'])
+@login_required
+def admin_delete_education(id):
+    edu = Education.query.get_or_404(id)
+    db.session.delete(edu)
+    db.session.commit()
+    flash('Education deleted.', 'success')
+    return redirect(url_for('admin'))
+
+# --- Ordering Route ---
+@app.route('/admin/order/update', methods=['POST'])
+@login_required
+def admin_update_order():
+    # Expects form data like: exp_1=10, proj_2=20, edu_1=5
+    for key, value in request.form.items():
+        if not value.isdigit():
+            continue
+        order_val = int(value)
+        if key.startswith('exp_'):
+            exp_id = int(key.split('_')[1])
+            exp = Experience.query.get(exp_id)
+            if exp: exp.display_order = order_val
+        elif key.startswith('proj_'):
+            proj_id = int(key.split('_')[1])
+            proj = Project.query.get(proj_id)
+            if proj: proj.display_order = order_val
+        elif key.startswith('edu_'):
+            edu_id = int(key.split('_')[1])
+            edu = Education.query.get(edu_id)
+            if edu: edu.display_order = order_val
+    
+    db.session.commit()
+    flash('Display orders updated!', 'success')
     return redirect(url_for('admin'))
 
 # AI Resume Parser Route
@@ -233,6 +357,7 @@ def admin_parse_resume():
         exps_added = 0
         for e in data.get('experience', []):
             if not Experience.query.filter_by(title=e['title'], company=e['company']).first():
+                # For newly parsed experiences, default to order 0
                 db.session.add(Experience(period=e['period'], title=e['title'], company=e['company'], description=e['description'], image_path=e.get('image_path', '')))
                 exps_added += 1
                 

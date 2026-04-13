@@ -260,13 +260,16 @@ lucide.createIcons();
 
         // --- Enhanced Typing animation with smoother transitions ---
         const typingText = document.getElementById('typing-text');
-        const roles = ["Full-Stack Developer", "Software Engineer", "Robotics Enthusiast", "Creative Coder", "Problem Solver"];
+        let roles = ["Full-Stack Developer", "Software Engineer", "Robotics Enthusiast", "Creative Coder", "Problem Solver"];
         let roleIndex = 0;
         let charIndex = 0;
         let isDeleting = false;
 
         function type() {
-            const currentRole = roles[roleIndex];
+            if (window.roles && window.roles.length > 0) {
+                roles = window.roles;
+            }
+            const currentRole = roles[roleIndex % roles.length];
             if (isDeleting) {
                 typingText.textContent = currentRole.substring(0, charIndex - 1);
                 charIndex--;

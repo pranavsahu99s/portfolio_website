@@ -33,6 +33,38 @@
           {% endif %}
         {% endwith %}
 
+        <!-- Site Settings -->
+        <div class="glass-effect p-6 rounded-xl mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-cyan-400">Site Settings (Hero, About, Resume)</h2>
+            <form method="POST" action="{{ url_for('admin_update_site_content') }}" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="space-y-4">
+                    <h3 class="text-xl text-white">Hero Section</h3>
+                    <input type="text" name="hero_title" placeholder="Hero Title" value="{{ site_content.hero_title if site_content else '' }}" class="form-input w-full p-3 rounded text-white" required>
+                    <input type="text" name="hero_subtitle" placeholder="Hero Subtitles (comma separated)" value="{{ site_content.hero_subtitle if site_content else '' }}" class="form-input w-full p-3 rounded text-white" required>
+                    <textarea name="hero_description" placeholder="Hero Description" rows="3" class="form-input w-full p-3 rounded text-white" required>{{ site_content.hero_description if site_content else '' }}</textarea>
+                </div>
+                <div class="space-y-4">
+                    <h3 class="text-xl text-white">About & Resume</h3>
+                    <textarea name="about_text" placeholder="About Text" rows="3" class="form-input w-full p-3 rounded text-white" required>{{ site_content.about_text if site_content else '' }}</textarea>
+                    
+                    <label class="block text-gray-400 text-sm">Update About Image</label>
+                    <input type="file" name="about_image" accept="image/*" class="form-input w-full p-3 rounded text-white">
+                    {% if site_content and site_content.about_image_path %}
+                    <p class="text-xs text-gray-500">Current: {{ site_content.about_image_path }}</p>
+                    {% endif %}
+
+                    <label class="block text-gray-400 text-sm">Upload Latest Resume (PDF)</label>
+                    <input type="file" name="resume_file" accept=".pdf" class="form-input w-full p-3 rounded text-white">
+                    {% if site_content and site_content.resume_file_path %}
+                    <p class="text-xs text-gray-500">Current: {{ site_content.resume_file_path }}</p>
+                    {% endif %}
+                </div>
+                <div class="md:col-span-2 mt-2">
+                    <button type="submit" class="bg-cyan-500 text-black px-6 py-2 rounded font-bold hover:bg-cyan-600 transition">Update Site Settings</button>
+                </div>
+            </form>
+        </div>
+
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             
             <!-- AI Resume Parser -->
@@ -70,41 +102,137 @@
                 </form>
             </div>
 
+            <!-- Add Education -->
+            <div class="glass-effect p-6 rounded-xl lg:col-span-2">
+                <h2 class="text-2xl font-bold mb-4 text-cyan-400">Add Education</h2>
+                <form method="POST" action="{{ url_for('admin_add_education') }}" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input type="text" name="period" placeholder="Period (e.g. 2021 - 2025)" class="form-input w-full p-3 rounded text-white" required>
+                    <input type="text" name="degree" placeholder="Degree" class="form-input w-full p-3 rounded text-white" required>
+                    <input type="text" name="institution" placeholder="Institution Name" class="form-input w-full p-3 rounded text-white md:col-span-2" required>
+                    <textarea name="description" placeholder="Description" rows="2" class="form-input w-full p-3 rounded text-white md:col-span-2" required></textarea>
+                    <div class="md:col-span-2">
+                        <button type="submit" class="bg-sky-500 text-black px-6 py-2 rounded font-bold hover:bg-sky-600 transition">Add Education</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Add Project -->
+            <div class="glass-effect p-6 rounded-xl lg:col-span-2">
+                <h2 class="text-2xl font-bold mb-4 text-cyan-400">Add Project</h2>
+                <form method="POST" action="{{ url_for('admin_add_project') }}" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input type="text" name="title" placeholder="Project Title" class="form-input w-full p-3 rounded text-white" required>
+                    <input type="text" name="tags" placeholder="Tags (comma separated)" class="form-input w-full p-3 rounded text-white" required>
+                    <input type="text" name="github_link" placeholder="GitHub Link (optional)" class="form-input w-full p-3 rounded text-white">
+                    <input type="text" name="external_link" placeholder="External Link (optional)" class="form-input w-full p-3 rounded text-white">
+                    <input type="file" name="image" class="form-input w-full p-3 rounded text-white md:col-span-2" accept="image/*">
+                    <textarea name="description" placeholder="Description" rows="3" class="form-input w-full p-3 rounded text-white md:col-span-2" required></textarea>
+                    <div class="md:col-span-2">
+                        <button type="submit" class="bg-sky-500 text-black px-6 py-2 rounded font-bold hover:bg-sky-600 transition">Add Project</button>
+                    </div>
+                </form>
+            </div>
+
         </div>
 
         <!-- Manage Data Section -->
         <div class="mt-12">
-            <h2 class="text-3xl font-bold mb-6 text-white border-b border-cyan-400/30 pb-2">Manage Current Data</h2>
+            <div class="flex justify-between items-center mb-6 border-b border-cyan-400/30 pb-2">
+                <h2 class="text-3xl font-bold text-white">Manage & Order Current Data</h2>
+            </div>
             
-            <div class="mb-8">
-                <h3 class="text-xl font-bold mb-4 text-cyan-300">Skills</h3>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    {% for skill in skills %}
-                    <div class="glass-effect p-4 rounded flex justify-between items-center">
-                        <span>{{ skill.name }}</span>
-                        <form method="POST" action="{{ url_for('admin_delete_skill', id=skill.id) }}" onsubmit="return confirm('Delete this skill?');">
-                            <button type="submit" class="text-red-400 hover:text-red-300 text-sm">Delete</button>
-                        </form>
-                    </div>
-                    {% endfor %}
+            <form method="POST" action="{{ url_for('admin_update_order') }}">
+                <div class="mb-4 text-right">
+                    <button type="submit" class="bg-green-500 text-white px-6 py-2 rounded font-bold hover:bg-green-600 transition">Save All Orders</button>
                 </div>
+
+                <div class="mb-8">
+                    <h3 class="text-xl font-bold mb-4 text-cyan-300">Skills</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        {% for skill in skills %}
+                        <div class="glass-effect p-4 rounded flex justify-between items-center">
+                            <span>{{ skill.name }}</span>
+                            <a href="#" onclick="event.preventDefault(); if(confirm('Delete?')) document.getElementById('del-skill-{{skill.id}}').submit();" class="text-red-400 hover:text-red-300 text-sm">Delete</a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-bold mb-4 text-cyan-300">Experience</h3>
+                        <div class="space-y-4">
+                            {% for exp in experiences %}
+                            <div class="glass-effect p-4 rounded flex justify-between items-center gap-4">
+                                <div class="flex-shrink-0">
+                                    <input type="number" name="exp_{{ exp.id }}" value="{{ exp.display_order }}" class="form-input w-16 p-1 rounded text-white text-center">
+                                </div>
+                                <div class="flex-grow">
+                                    <span class="font-bold text-white">{{ exp.title }}</span> <span class="text-gray-400 text-sm">({{ exp.period }})</span>
+                                </div>
+                                <div>
+                                    <a href="#" onclick="event.preventDefault(); if(confirm('Delete?')) document.getElementById('del-exp-{{exp.id}}').submit();" class="text-red-400 hover:text-red-300 text-sm px-3 py-1 bg-red-500/10 rounded">Delete</a>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xl font-bold mb-4 text-cyan-300">Education</h3>
+                        <div class="space-y-4">
+                            {% for edu in educations %}
+                            <div class="glass-effect p-4 rounded flex justify-between items-center gap-4">
+                                <div class="flex-shrink-0">
+                                    <input type="number" name="edu_{{ edu.id }}" value="{{ edu.display_order }}" class="form-input w-16 p-1 rounded text-white text-center">
+                                </div>
+                                <div class="flex-grow">
+                                    <span class="font-bold text-white">{{ edu.degree }}</span> <span class="text-gray-400 text-sm">({{ edu.institution }})</span>
+                                </div>
+                                <div>
+                                    <a href="#" onclick="event.preventDefault(); if(confirm('Delete?')) document.getElementById('del-edu-{{edu.id}}').submit();" class="text-red-400 hover:text-red-300 text-sm px-3 py-1 bg-red-500/10 rounded">Delete</a>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-2">
+                        <h3 class="text-xl font-bold mb-4 text-cyan-300">Projects</h3>
+                        <div class="space-y-4">
+                            {% for proj in projects %}
+                            <div class="glass-effect p-4 rounded flex justify-between items-center gap-4">
+                                <div class="flex-shrink-0">
+                                    <input type="number" name="proj_{{ proj.id }}" value="{{ proj.display_order }}" class="form-input w-16 p-1 rounded text-white text-center">
+                                </div>
+                                <div class="flex-grow">
+                                    <span class="font-bold text-white">{{ proj.title }}</span>
+                                </div>
+                                <div>
+                                    <a href="#" onclick="event.preventDefault(); if(confirm('Delete?')) document.getElementById('del-proj-{{proj.id}}').submit();" class="text-red-400 hover:text-red-300 text-sm px-3 py-1 bg-red-500/10 rounded">Delete</a>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Hidden delete forms -->
+            <div class="hidden">
+                {% for skill in skills %}
+                <form id="del-skill-{{skill.id}}" method="POST" action="{{ url_for('admin_delete_skill', id=skill.id) }}"></form>
+                {% endfor %}
+                {% for exp in experiences %}
+                <form id="del-exp-{{exp.id}}" method="POST" action="{{ url_for('admin_delete_experience', id=exp.id) }}"></form>
+                {% endfor %}
+                {% for edu in educations %}
+                <form id="del-edu-{{edu.id}}" method="POST" action="{{ url_for('admin_delete_education', id=edu.id) }}"></form>
+                {% endfor %}
+                {% for proj in projects %}
+                <form id="del-proj-{{proj.id}}" method="POST" action="{{ url_for('admin_delete_project', id=proj.id) }}"></form>
+                {% endfor %}
             </div>
 
-            <div>
-                <h3 class="text-xl font-bold mb-4 text-cyan-300">Experience</h3>
-                <div class="space-y-4">
-                    {% for exp in experiences %}
-                    <div class="glass-effect p-4 rounded flex justify-between items-center">
-                        <div>
-                            <span class="font-bold text-white">{{ exp.title }}</span> at {{ exp.company }} <span class="text-gray-400 text-sm">({{ exp.period }})</span>
-                        </div>
-                        <form method="POST" action="{{ url_for('admin_delete_experience', id=exp.id) }}" onsubmit="return confirm('Delete this experience?');">
-                            <button type="submit" class="text-red-400 hover:text-red-300 text-sm px-3 py-1 bg-red-500/10 rounded">Delete</button>
-                        </form>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
         </div>
     </div>
 </body>
