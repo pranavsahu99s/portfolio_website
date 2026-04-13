@@ -24,6 +24,15 @@ if api_key and api_key != 'YOUR_GEMINI_API_KEY_HERE':
     client = genai.Client(api_key=api_key)
 
 # Models
+class SiteContent(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    hero_title = db.Column(db.String(255), nullable=False)
+    hero_subtitle = db.Column(db.String(255), nullable=False)
+    hero_description = db.Column(db.Text, nullable=False)
+    about_text = db.Column(db.Text, nullable=False)
+    about_image_path = db.Column(db.String(255), nullable=True)
+    resume_file_path = db.Column(db.String(255), nullable=True)
+
 class Skill(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
@@ -31,6 +40,7 @@ class Skill(db.Model):
 
 class Experience(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    display_order = db.Column(db.Integer, default=0, nullable=False)
     period = db.Column(db.String(100), nullable=False)
     title = db.Column(db.String(150), nullable=False)
     company = db.Column(db.String(150), nullable=False)
@@ -39,6 +49,7 @@ class Experience(db.Model):
 
 class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    display_order = db.Column(db.Integer, default=0, nullable=False)
     title = db.Column(db.String(150), nullable=False)
     description = db.Column(db.Text, nullable=False)
     tags = db.Column(db.String(255), nullable=False)
@@ -48,6 +59,7 @@ class Project(db.Model):
 
 class Education(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    display_order = db.Column(db.Integer, default=0, nullable=False)
     period = db.Column(db.String(100), nullable=False)
     degree = db.Column(db.String(150), nullable=False)
     institution = db.Column(db.String(150), nullable=False)

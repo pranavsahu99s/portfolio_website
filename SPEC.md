@@ -4,6 +4,15 @@
 
 ## Database Models
 
+### SiteContent
+- `id`: Integer (Primary Key, usually 1 as it's a singleton)
+- `hero_title`: String
+- `hero_subtitle`: String
+- `hero_description`: Text
+- `about_text`: Text
+- `about_image_path`: String
+- `resume_file_path`: String
+
 ### Skill
 - `id`: Integer (Primary Key)
 - `name`: String
@@ -11,6 +20,7 @@
 
 ### Experience
 - `id`: Integer (Primary Key)
+- `display_order`: Integer (Default: 0)
 - `period`: String (e.g., 'July 2025 - Present')
 - `title`: String
 - `company`: String
@@ -19,6 +29,7 @@
 
 ### Project
 - `id`: Integer (Primary Key)
+- `display_order`: Integer (Default: 0)
 - `title`: String
 - `description`: Text
 - `tags`: String (Comma-separated or JSON list)
@@ -28,6 +39,7 @@
 
 ### Education
 - `id`: Integer (Primary Key)
+- `display_order`: Integer (Default: 0)
 - `period`: String
 - `degree`: String
 - `institution`: String

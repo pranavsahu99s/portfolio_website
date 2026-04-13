@@ -13,3 +13,7 @@
 ## 3. AI Resume Parsing
 - **Decision:** Use Gemini API to extract structured JSON data from uploaded resumes.
 - **Rationale:** Automates the process of updating skills and experiences in the portfolio. The extracted data shape is explicitly defined in `SPEC.md` to ensure predictable database insertions.
+
+## 4. Soft-Coding Remaining Sections & Ordering
+- **Decision:** Introduce a `SiteContent` singleton model to hold global site variables (Hero text, About text, uploaded resume path) and add `display_order` fields to existing lists.
+- **Rationale:** The user wants full dynamic control of all sections from the admin panel. Using a singleton table `SiteContent` is the simplest way to manage site-wide settings without complex multi-tenant or key-value setups. Adding an order integer column (`display_order`) is a simple, standard way to allow users to control the layout order of their projects, education, and experience.

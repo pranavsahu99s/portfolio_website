@@ -1,4 +1,4 @@
-from app import app, db, Skill, Experience, Project, Education
+from app import app, db, SiteContent, Skill, Experience, Project, Education
 
 def seed_data():
     with app.app_context():
@@ -9,14 +9,27 @@ def seed_data():
             print("Database already seeded.")
             return
 
+        # Seed SiteContent
+        site_content = SiteContent(
+            hero_title="Hi, I'm Pranav Sahu",
+            hero_subtitle="Full-Stack Developer,Software Engineer,Robotics Enthusiast,Creative Coder,Problem Solver",
+            hero_description="I build innovative and efficient web applications. Passionate about clean code, user experience, and cutting-edge technologies.",
+            about_text="Hello! I'm Pranav, a developer with a knack for creating dynamic and responsive web applications. My journey into tech started with a fascination for how things work, which quickly evolved into a passion for building software that solves real-world problems.\n\nWith a strong foundation in both front-end and back-end development, I enjoy the entire process of bringing an idea to life, from initial concept to deployment. I'm a lifelong learner, always eager to explore new technologies and improve my skill set.\n\nWhen I'm not coding, you can find me exploring IoT technologies, ricing linux, or contributing to open-source projects.",
+            about_image_path="my_prof_pic.jpg",
+            resume_file_path="#"
+        )
+        db.session.add(site_content)
+
         # Seed Education
         ed1 = Education(
+            display_order=10,
             period="2021 - 2023",
             degree="Higher Secondary Education",
             institution="KPS Raipur",
             description="Completed my higher secondary education, scoring 89%, with a strong foundation in mathematics, physics, and computer science."
         )
         ed2 = Education(
+            display_order=20,
             period="2024 - Present",
             degree="B.Tech in Computer Science and Engineering",
             institution="Amity University Rajasthan",
@@ -42,6 +55,7 @@ def seed_data():
 
         # Seed Experiences
         exp1 = Experience(
+            display_order=10,
             period="July 2025 - Present",
             title="Senior Developer at RAIoT Club",
             company="RAIoT Club",
@@ -49,6 +63,7 @@ def seed_data():
             image_path="iitr_me2.jpg"
         )
         exp2 = Experience(
+            display_order=20,
             period="March 2025",
             title="Cognizance IIT Roorkee",
             company="Cognizance",
@@ -56,6 +71,7 @@ def seed_data():
             image_path="iitr.jpg"
         )
         exp3 = Experience(
+            display_order=30,
             period="January 2025",
             title="Prometeo IIT Jodhpur",
             company="Prometeo",
@@ -63,6 +79,7 @@ def seed_data():
             image_path="20250120_020853.jpg"
         )
         exp4 = Experience(
+            display_order=40,
             period="November 2024",
             title="Sphinx MNIT",
             company="Sphinx",
@@ -70,6 +87,7 @@ def seed_data():
             image_path="sphinx.jpg"
         )
         exp5 = Experience(
+            display_order=50,
             period="Sept 2024 - Mar 2025",
             title="Junior Developer at RAIoT Club",
             company="RAIoT Club",
@@ -80,6 +98,7 @@ def seed_data():
 
         # Seed Projects
         p1 = Project(
+            display_order=10,
             title="Attendance System",
             description="A full-featured IoT-based attendance solution that combines a physical check-in device with a powerful web-based backend. A person can clock in using an RFID card or a PIN on a numpad, with an LCD for instant feedback. The system features a Django web portal for administration and seamlessly syncs all attendance data in real-time directly to a Google Sheet, making record-keeping simple and accessible.",
             tags="ESP,Python,Django,Google Sheets API",
@@ -88,6 +107,7 @@ def seed_data():
             external_link="#"
         )
         p2 = Project(
+            display_order=20,
             title="Line Follower Bot",
             description="An Arduino-based robot using a PID algorithm and an IR sensor array for ultra-smooth line following. It also implements a maze-solving algorithm to autonomously navigate complex intersections and paths. A TB6 motor driver provides precise motor control.",
             tags="Arduino,IOT,C++",
@@ -96,6 +116,7 @@ def seed_data():
             external_link="#"
         )
         p3 = Project(
+            display_order=30,
             title="Portfolio Website",
             description="A minimalist developer portfolio built from scratch with vanilla HTML, CSS, and JavaScript. It features a dynamic particle animation background and subtle interactive effects to create a clean, modern, and engaging user experience.",
             tags="HTML,CSS,JavaScript",
