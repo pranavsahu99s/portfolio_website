@@ -4,8 +4,8 @@ import os
 import json
 from dotenv import load_dotenv
 from functools import wraps
-import google.generativeai as genai
-from werkzeug.utils import secure_url_filename
+from google import genai
+from werkzeug.utils import secure_filename
 import fitz  # PyMuPDF
 
 load_dotenv()
@@ -19,8 +19,9 @@ db = SQLAlchemy(app)
 
 # Configure Gemini
 api_key = os.environ.get('GEMINI_API_KEY')
+client = None
 if api_key and api_key != 'YOUR_GEMINI_API_KEY_HERE':
-    genai.configure(api_key=api_key)
+    client = genai.Client(api_key=api_key)
 
 # Models
 class Skill(db.Model):
@@ -182,7 +183,10 @@ def admin_parse_resume():
         else:
             text = file.read().decode('utf-8')
             
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        if not client:
+            flash('Gemini API Key is not configured properly.', 'error')
+            return redirect(url_for('admin'))
+
         prompt = """
         Parse the following resume text and extract the skills and experiences.
         Return STRICTLY a JSON object with this exact shape:
@@ -199,7 +203,7 @@ def admin_parse_resume():
         Resume Text:
         """ + text
         
-        response = model.generate_content(prompt)
+        response = client.models.generate_content(model='gemini-2.5-flash', contents=prompt)
         result_text = response.text.strip()
         if result_text.startswith('```json'):
             result_text = result_text[7:]
