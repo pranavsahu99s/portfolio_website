@@ -21,8 +21,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-
-
 # Configure Gemini
 api_key = os.environ.get('GEMINI_API_KEY')
 client = None
@@ -70,9 +68,6 @@ class Education(db.Model):
     degree = db.Column(db.String(150), nullable=False)
     institution = db.Column(db.String(150), nullable=False)
     description = db.Column(db.Text, nullable=False)
-
-with app.app_context():
-    db.create_all()
 
 # Auth Decorator
 def login_required(f):

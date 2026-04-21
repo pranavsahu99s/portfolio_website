@@ -17,3 +17,7 @@
 ## 4. Soft-Coding Remaining Sections & Ordering
 - **Decision:** Introduce a `SiteContent` singleton model to hold global site variables (Hero text, About text, uploaded resume path) and add `display_order` fields to existing lists.
 - **Rationale:** The user wants full dynamic control of all sections from the admin panel. Using a singleton table `SiteContent` is the simplest way to manage site-wide settings without complex multi-tenant or key-value setups. Adding an order integer column (`display_order`) is a simple, standard way to allow users to control the layout order of their projects, education, and experience.
+
+## 5. Database Initialization Strategy (Render / Gunicorn)
+- **Decision:** Move `db.create_all()` out of the module level in `app.py` and run `python seed.py` within `render.yaml` `startCommand` instead.
+- **Rationale:** When running under Gunicorn (`gunicorn app:app`), the module-level `db.create_all()` was being executed before SQLAlchemy models were parsed and registered, causing empty tables (e.g. `relation "site_content" does not exist`). By removing it from `app.py` and prefixing the start command with `python seed.py`, the models are correctly imported before `db.create_all()` is called, and the initial data is immediately seeded before serving traffic.
