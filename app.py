@@ -69,6 +69,15 @@ class Education(db.Model):
     institution = db.Column(db.String(150), nullable=False)
     description = db.Column(db.Text, nullable=False)
 
+# Initialize database tables and seed data if empty
+with app.app_context():
+    db.create_all()
+    try:
+        from seed import seed_data
+        seed_data()
+    except Exception as e:
+        print(f"Error seeding database: {e}")
+
 # Auth Decorator
 def login_required(f):
     @wraps(f)
